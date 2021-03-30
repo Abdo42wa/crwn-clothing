@@ -1,7 +1,7 @@
 import React from 'react';
 import './directory.styles.scss'
 import MenuItem from '../menu-item/menu-item.component'
-import sections from '../../sections.js'
+import sections from '../../data/sections.js'
 
 
 
