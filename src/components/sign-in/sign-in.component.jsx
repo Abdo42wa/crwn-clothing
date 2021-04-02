@@ -1,34 +1,36 @@
 import React,{useState} from 'react'
 import './sing-in.styles.scss'
 import FormInput from '../form-input/form-input.component'
-import {signInWithGoogle} from '../../firebase/firebase.utils'
+import {auth,signInWithGoogle} from '../../firebase/firebase.utils'
 import CustomButton from '../custom-button/custom-button.component'
 
 const SignIn = () => {
 
     //const [email,setEmail] = useState('');
     //const [password,setPassword] = useState('');
-    const [ state,setState] = useState({
+    const [ userCredentials,setUserCredentials] = useState({
 
-        email: "",
-        password:""
+        email:  '',
+        password:''
     })
 
-  const handelSubmit = (e) => {
+    const {email,password} = userCredentials;
+  const handelSubmit = async (e) => {
 
         e.preventDefault();
-        setState({
-            email: '',
-            password: ''
-        })
+
+        try {
+            await auth.signInWithEmailAndPassword(email,password)
+            setUserCredentials({email:'',password:''})
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handelChange = (e) =>{
-        const value = e.target.value;
-        setState({
-          ...state,
-          [e.target.name]: value
-        });
+        const {value,name} = e.target;
+        setUserCredentials({...userCredentials, [name]:value})
+        
     }
     return (
         <div className='sign-in'>
@@ -41,14 +43,14 @@ const SignIn = () => {
                     name='email' 
                     type='email' 
                     handleChange={handelChange}
-                    value={state.email}
+                    value={email}
                     label='email'
                     required  />
                     <FormInput 
                     name='password'
                      type='password' 
                      handleChange={handelChange}
-                     value={state.password} 
+                     value={password} 
                      label='password'
                      required  />
 

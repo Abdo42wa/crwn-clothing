@@ -6,15 +6,31 @@ import SignInAndSignUpPage from './pages/sing-in-and-sing-up/sing-in-and-sing-up
 import {Switch,Route} from 'react-router-dom'
 import Header from './components/header/header.component'
 import {auth} from './firebase/firebase.utils'
+import {createUserProfileDocument} from './firebase/firebase.utils'
+
 
 function App() {
-  const [currentUser,setCurrentUser] = useState(null)
+  const [currentUser,setCurrentUser] = useState()
 
   //const unsubscribeFromAuth = null;
 
   useEffect (() => {
-    const unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-        setCurrentUser(user);
+    const unsubscribeFromAuth = auth.onAuthStateChanged( async  userAuth => {
+        if (userAuth) {
+            const userRef = await createUserProfileDocument(userAuth);
+
+
+            userRef.onSnapshot(snapshot => {
+
+              setCurrentUser({
+                id: snapshot.id,
+                ...snapshot.data()
+              })
+            }) 
+            setCurrentUser({currentUser : userAuth})
+           
+        }
+        console.log(userAuth)
         return () => {
           unsubscribeFromAuth();
         }
@@ -22,9 +38,6 @@ function App() {
       })
 
     },[])
-
-   
-  
   return (
     <div> 
     <Header currentUser ={ currentUser} />
@@ -37,5 +50,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
